@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Julia Do | Artist & Writer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Archivo+Black&family=Syne:wght@400;500;600;700&display=swap');
+        
+        :root {
+            --primary: #FF206E;
+            --secondary: #41EAD4;
+            --accent: #FBFF12;
+            --dark: #0C0F0A;
+            --light: #FFFFFA;
+        }
+        
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background-color: var(--light);
+            color: var(--dark);
+            overflow-x: hidden;
+        }
+        
+        .title-font {
+            font-family: 'Archivo Black', sans-serif;
+            letter-spacing: -0.03em;
+        }
+        
+        .hero-bg {
+            background: linear-gradient(135deg, var(--light) 0%, #f5f5f5 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero-bg::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 30%, var(--secondary) 0%, transparent 20%),
+                radial-gradient(circle at 80% 70%, var(--primary) 0%, transparent 20%),
+                radial-gradient(circle at 40% 80%, var(--accent) 0%, transparent 20%);
+            opacity: 0.1;
+            z-index: 0;
+        }
+        
+        .artistic-border {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .artistic-border::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: var(--primary);
+            z-index: -1;
+            clip-path: polygon(0% 0%, 100% 0%, 95% 100%, 0% 100%);
+        }
+        
+        .image-mask {
+            clip-path: polygon(0 0, 100% 0, 100% 85%, 0 100%);
+            border: 6px solid var(--dark);
+            box-shadow: 8px 8px 0 var(--primary), 
+                        16px 16px 0 var(--secondary),
+                        24px 24px 0 var(--accent);
+        }
+        
+        .hover-zoom {
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease;
+        }
+        
+        .hover-zoom:hover {
+            transform: scale(1.03);
+        }
+        
+        .nav-link {
+            position: relative;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 3px;
+            bottom: -4px;
+            left: 0;
+            background-color: var(--primary);
+            transition: width 0.3s ease;
+        }
+        
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        
+        .active-nav::after {
+            width: 100%;
+        }
+        
+        .mobile-menu {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            background-color: var(--light);
+            border: 3px solid var(--dark);
+            box-shadow: 6px 6px 0 var(--primary);
+        }
+        
+        .mobile-menu.open {
+            max-height: 500px;
+        }
+        
+        .art-category {
+            transition: all 0.3s ease;
+            position: relative;
+            padding: 8px 16px;
+            border: 2px solid var(--dark);
+            background: white;
+            font-weight: 600;
+            box-shadow: 4px 4px 0 var(--dark);
+            margin-right: 8px;
+        }
+        
+        .art-category:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 6px 6px 0 var(--dark);
+        }
+        
+        .active-category {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        .blog-card {
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            border: 3px solid var(--dark);
+            padding: 24px;
+            background: white;
+            box-shadow: 8px 8px 0 var(--secondary);
+        }
+        
+        .blog-card:hover {
+            transform: translate(-4px, -4px);
+            box-shadow: 12px 12px 0 var(--secondary);
+        }
+        
+        .contact-input {
+            background: transparent;
+            border-bottom: 3px solid var(--dark);
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        
+        .contact-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        
+        .artwork-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(12, 15, 10, 0.7);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .artwork-item {
+            border: 4px solid var(--dark);
+            box-shadow: 6px 6px 0 var(--accent);
+        }
+        
+        .artwork-item:hover .artwork-overlay {
+            opacity: 1;
+        }
+        
+        .scroll-indicator {
+            animation: bounce 2s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
+            40% {transform: translateY(-20px);}
+            60% {transform: translateY(-10px);}
+        }
+        
+        /* Gen Z graphic elements */
+        .graphic-circle {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.1;
+            z-index: -1;
+        }
+        
+        .graphic-squiggle {
+            position: absolute;
+            height: 100px;
+            width: 200px;
+            background: url("data:image/svg+xml,%3Csvg width='200' height='100' viewBox='0 0 200 100' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M10 50C10 50 40 10 70 50C100 90 130 10 160 50C190 90 190 50 190 50' stroke='%23FF206E' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E%0A");
+            background-repeat: no-repeat;
+            z-index: -1;
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            border: 3px solid var(--dark);
+            box-shadow: 6px 6px 0 var(--dark);
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 8px 8px 0 var(--dark);
+        }
+        
+        .btn-secondary {
+            background: white;
+            color: var(--dark);
+            border: 3px solid var(--dark);
+            box-shadow: 6px 6px 0 var(--dark);
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-secondary:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 8px 8px 0 var(--dark);
+        }
+        
+        section {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        footer {
+            background: var(--dark);
+            color: white;
+            border-top: 6px solid var(--primary);
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .image-mask {
+                box-shadow: 4px 4px 0 var(--primary), 
+                            8px 8px 0 var(--secondary);
+            }
+            
+            .artwork-item {
+                box-shadow: 4px 4px 0 var(--accent);
+            }
+            
+            .blog-card {
+                box-shadow: 4px 4px 0 var(--secondary);
+            }
+            
+            .blog-card:hover {
+                box-shadow: 6px 6px 0 var(--secondary);
+            }
+        }
+    </style>
+</head>
+<body class="antialiased">
+    <!-- Navigation -->
+    <nav class="bg-transparent absolute w-full z-50">
+        <div class="max-w-7xl mx-auto px-6 py-6">
+            <div class="flex justify-between items-center">
+                <a href="#home" class="text-2xl font-bold tracking-tight" style="font-family: 'Syne', sans-serif;">JULIA DO</a>
+                
+                <div class="hidden md:flex space-x-8">
+                    <a href="#about" class="nav-link text-base uppercase tracking-wider">About</a>
+                    <a href="#art" class="nav-link text-base uppercase tracking-wider">Art</a>
+                    <a href="#writing" class="nav-link text-base uppercase tracking-wider">Writing</a>
+                    <a href="#contact" class="nav-link text-base uppercase tracking-wider">Contact</a>
+                </div>
+                
+                <button id="menu-toggle" class="md:hidden focus:outline-none">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Mobile menu -->
+        <div id="mobile-menu" class="mobile-menu md:hidden px-6 mx-6">
+            <div class="py-4 space-y-6">
+                <a href="#about" class="block text-lg uppercase tracking-wider font-medium">About</a>
+                <a href="#art" class="block text-lg uppercase tracking-wider font-medium">Art</a>
+                <a href="#writing" class="block text-lg uppercase tracking-wider font-medium">Writing</a>
+                <a href="#contact" class="block text-lg uppercase tracking-wider font-medium">Contact</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero-bg min-h-screen flex items-center">
+        <!-- Graphic elements -->
+        <div class="graphic-circle" style="width: 300px; height: 300px; background: var(--primary); top: -100px; right: -100px;"></div>
+        <div class="graphic-circle" style="width: 200px; height: 200px; background: var(--secondary); bottom: -50px; left: -50px;"></div>
+        <div class="graphic-squiggle" style="top: 30%; right: 10%; transform: rotate(15deg);"></div>
+        
+        <div class="max-w-7xl mx-auto px-6 py-24 relative z-10">
+            <div class="flex flex-col md:flex-row items-center">
+                <div class="md:w-1/2 mb-16 md:mb-0">
+                    <h1 class="title-font text-6xl md:text-8xl font-bold mb-6 leading-tight">JULIA DO</h1>
+                    <h2 class="text-2xl md:text-3xl font-medium mb-8" style="font-family: 'Syne', sans-serif;">
+                        <span class="bg-var(--accent) px-2 py-1" style="background: var(--accent);">ARTIST</span> & 
+                        <span class="bg-var(--secondary) px-2 py-1" style="background: var(--secondary);">WRITER</span>
+                    </h2>
+                    <p class="text-xl max-w-md mb-10 leading-relaxed font-medium">
+                        Exploring the intersection of visual storytelling and written narrative through paint, photography, and prose.
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="#art" class="px-8 py-3 btn-primary">View Art</a>
+                        <a href="#writing" class="px-8 py-3 btn-secondary">Read Words</a>
+                    </div>
+                </div>
+                
+                <div class="md:w-1/2 flex justify-center">
+                    <div class="relative w-72 h-96 md:w-80 md:h-104 image-mask overflow-hidden bg-white">
+                        <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5cd?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=688&q=80" 
+                             alt="Julia Do" 
+                             class="w-full h-full object-cover hover-zoom">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="absolute bottom-10 left-1/2 transform -translate-x-1/2 text-center">
+                <p class="text-sm tracking-widest mb-2 font-medium">SCROLL</p>
+                <div class="scroll-indicator">
+                    <svg class="w-8 h-8 mx-auto" fill="var(--primary)" stroke="var(--primary)" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="py-24 bg-white relative">
+        <!-- Graphic elements -->
+        <div class="graphic-squiggle" style="bottom: 10%; left: 5%; transform: rotate(-15deg);"></div>
+        
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="flex flex-col md:flex-row items-start">
+                <div class="md:w-1/3 mb-12 md:mb-0">
+                    <h2 class="title-font text-5xl md:text-6xl mb-6 artistic-border">About</h2>
+                    <p class="text-sm uppercase tracking-widest font-medium" style="color: var(--primary);">BIOGRAPHY</p>
+                </div>
+                
+                <div class="md:w-2/3">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+                        <div>
+                            <p class="text-xl mb-6 leading-relaxed font-medium">
+                                Julia Do is a Vietnamese-American multidisciplinary artist and writer based in Portland, Oregon. Her work explores themes of cultural identity, memory, and the natural world through a variety of mediums.
+                            </p>
+                            <p class="text-xl mb-6 leading-relaxed font-medium">
+                                With a background in both fine arts and literature, Julia approaches each project with a storyteller's sensibility, whether working with paint, photography, or prose.
+                            </p>
+                        </div>
+                        <div>
+                            <p class="text-xl mb-6 leading-relaxed font-medium">
+                                Julia's work has been exhibited in galleries across the Pacific Northwest and featured in numerous literary journals. She holds an MFA from the Pacific Northwest College of Art.
+                            </p>
+                            <p class="text-xl leading-relaxed font-medium">
+                                When not creating, Julia teaches art workshops for underserved youth and volunteers with organizations promoting arts education.
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-16 grid grid-cols-2 md:grid-cols-4 gap-6">
+                        <div class="border-l-4 border-black pl-4 py-2">
+                            <p class="text-xs uppercase tracking-widest font-bold" style="color: var(--primary);">Education</p>
+                            <p class="mt-2 text-lg font-medium">MFA Visual Arts</p>
+                            <p class="text-sm opacity-70">PNCA, 2018</p>
+                        </div>
+                        <div class="border-l-4 border-black pl-4 py-2">
+                            <p class="text-xs uppercase tracking-widest font-bold" style="color: var(--primary);">Exhibitions</p>
+                            <p class="mt-2 text-lg font-medium">12+ Shows</p>
+                            <p class="text-sm opacity-70">2015-Present</p>
+                        </div>
+                        <div class="border-l-4 border-black pl-4 py-2">
+                            <p class="text-xs uppercase tracking-widest font-bold" style="color: var(--primary);">Publications</p>
+                            <p class="mt-2 text-lg font-medium">14 Journals</p>
+                            <p class="text-sm opacity-70">2016-Present</p>
+                        </div>
+                        <div class="border-l-4 border-black pl-4 py-2">
+                            <p class="text-xs uppercase tracking-widest font-bold" style="color: var(--primary);">Residencies</p>
+                            <p class="mt-2 text-lg font-medium">3 Programs</p>
+                            <p class="text-sm opacity-70">2019-2022</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Art Section -->
+    <section id="art" class="py-24 relative" style="background-color: #f5f5f5;">
+        <!-- Graphic elements -->
+        <div class="graphic-circle" style="width: 400px; height: 400px; background: var(--secondary); top: -200px; right: -200px;"></div>
+        
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="flex flex-col md:flex-row mb-16">
+                <div class="md:w-1/3 mb-8 md:mb-0">
+                    <h2 class="title-font text-5xl md:text-6xl mb-6 artistic-border">Art</h2>
+                    <p class="text-sm uppercase tracking-widest font-medium" style="color: var(--primary);">CREATIVE WORK</p>
+                </div>
+                
+                <div class="md:w-2/3 flex items-center">
+                    <div class="flex flex-wrap gap-2">
+                        <button onclick="showCategory('paintings')" class="art-category active-category">Paintings</button>
+                        <button onclick="showCategory('photography')" class="art-category">Photography</button>
+                        <button onclick="showCategory('design')" class="art-category">Design</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Paintings Gallery -->
+            <div id="paintings" class="art-gallery grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="artwork-item relative overflow-hidden bg-white">
+                    <img src="https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=745&q=80" 
+                         alt="Abstract Landscape" 
+                         class="w-full h-96 object-cover hover-zoom">
+                    <div class="artwork-overlay">
+                        <div class="text-white text-center p-4">
+                            <h3 class="text-2xl font-bold mb-1">Abstract Landscape</h3>
+                            <p class="text-base">Oil on canvas, 2023</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="artwork-item relative overflow-hidden bg-white">
+                    <img src="https://images.unsplash.com/photo-1578926375605-eaf7559b1458?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80" 
+                         alt="Portrait Series #4" 
+                         class="w-full h-96 object-cover hover-zoom">
+                    <div class="artwork-overlay">
+                        <div class="text-white text-center p-4">
+                            <h3 class="text-2xl font-bold mb-1">Portrait Series #4</h3>
+                            <p class="text-base">Acrylic and ink, 2022</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="artwork-item relative overflow-hidden bg-white">
+                    <img src="https://images.unsplash.com/photo-1536924940846-227afcb31ba2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=686&q=80" 
+                         alt="Urban Fragments" 
+                         class="w-full h-96 object-cover hover-zoom">
+                    <div class="artwork-overlay">
+                        <div class="text-white text-center p-4">
+                            <h3 class="text-2xl font-bold mb-1">Urban Fragments</h3>
+                            <p class="text-base">Mixed media, 2021</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Photography Gallery (hidden by default) -->
+            <div id="photography" class="art-gallery hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="artwork-item relative overflow-hidden bg-white">
+                    <img src="https://images.unsplash.com/photo-1504208434309-cb69f4fe52b0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" 
+                         alt="Pacific Northwest" 
+                         class="w-full h-96 object-cover hover-zoom">
+                    <div class="artwork-overlay">
+                        <div class="text-white text-center p-4">
+                            <h3 class="text-2xl font-bold mb-1">Pacific Northwest</h3>
+                            <p class="text-base">Digital photography, 2023</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="artwork-item relative overflow-hidden bg-white">
+                    <img src="https://images.unsplash.com/photo-1506260408121-e353d10b87c7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1528&q=80" 
+                         alt="Urban Geometry" 
+                         class="w-full h-96 object-cover hover-zoom">
+                    <div class="artwork-overlay">
+                        <div class="text-white text-center p-4">
+                            <h3 class="text-2xl font-bold mb-1">Urban Geometry</h3>
+                            <p class="text-base">Film photography, 2022</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="artwork-item relative overflow-hidden bg-white">
+                    <img src="https://images.unsplash.com/photo-1470114716159-e389f8712fda?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" 
+                         alt="Portrait Study" 
+                         class="w-full h-96 object-cover hover-zoom">
+                    <div class="artwork-overlay">
+                        <div class="text-white text-center p-4">
+                            <h3 class="text-2xl font-bold mb-1">Portrait Study</h3>
+                            <p class="text-base">Digital photography, 2021</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Design Gallery (hidden by default) -->
+            <div id="design" class="art-gallery hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="artwork-item relative overflow-hidden bg-white">
+                    <img src="https://images.unsplash.com/photo-1547036967-23d11aacaee0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80" 
+                         alt="Book Cover Design" 
+                         class="w-full h-96 object-cover hover-zoom">
+                    <div class="artwork-overlay">
+                        <div class="text-white text-center p-4">
+                            <h3 class="text-2xl font-bold mb-1">Book Cover Design</h3>
+                            <p class="text-base">Digital illustration, 2023</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="artwork-item relative overflow-hidden bg-white">
+                    <img src="https://images.unsplash.com/photo-1581291518633-83b4ebd1d83e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" 
+                         alt="Brand Identity" 
+                         class="w-full h-96 object-cover hover-zoom">
+                    <div class="artwork-overlay">
+                        <div class="text-white text-center p-4">
+                            <h3 class="text-2xl font-bold mb-1">Brand Identity</h3>
+                            <p class="text-base">Logo design, 2022</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="artwork-item relative overflow-hidden bg-white">
+                    <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1064&q=80" 
+                         alt="Editorial Layout" 
+                         class="w-full h-96 object-cover hover-zoom">
+                    <div class="artwork-overlay">
+                        <div class="text-white text-center p-4">
+                            <h3 class="text-2xl font-bold mb-1">Editorial Layout</h3>
+                            <p class="text-base">Magazine spread, 2021</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-16 text-center">
+                <a href="#" class="inline-block border-b-2 border-black pb-1 text-sm uppercase tracking-widest font-bold hover:opacity-70">View Full Portfolio →</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Writing Section -->
+    <section id="writing" class="py-24 bg-white relative">
+        <!-- Graphic elements -->
+        <div class="graphic-squiggle" style="top: 20%; left: 10%; transform: rotate(-30deg);"></div>
+        <div class="graphic-circle" style="width: 150px; height: 150px; background: var(--accent); bottom: 10%; right: 10%;"></div>
+        
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="flex flex-col md:flex-row mb-16">
+                <div class="md:w-1/3 mb-8 md:mb-0">
+                    <h2 class="title-font text-5xl md:text-6xl mb-6 artistic-border">Writing</h2>
+                    <p class="text-sm uppercase tracking-widest font-medium" style="color: var(--primary);">PUBLICATIONS & BLOG</p>
+                </div>
+                
+                <div class="md:w-2/3">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <!-- Published Works -->
+                        <div>
+                            <h3 class="text-2xl font-bold mb-6">Published Works</h3>
+                            <div class="space-y-8">
+                                <div>
+                                    <h4 class="text-xl font-bold mb-1">"The Weight of Water"</h4>
+                                    <p class="text-sm mb-3" style="color: var(--primary);">Literary Northwest, Spring 2023</p>
+                                    <p class="mb-3 font-medium">A short story exploring immigration, memory, and the Pacific Northwest landscape.</p>
+                                    <a href="#" class="text-sm border-b-2 border-black pb-1 inline-block font-bold">Read excerpt →</a>
+                                </div>
+                                <div>
+                                    <h4 class="text-xl font-bold mb-1">"Bone Memory"</h4>
+                                    <p class="text-sm mb-3" style="color: var(--primary);">Graywolf Press, 2021</p>
+                                    <p class="mb-3 font-medium">A collection of 32 poems examining family history, trauma, and healing.</p>
+                                    <a href="#" class="text-sm border-b-2 border-black pb-1 inline-block font-bold">Purchase →</a>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Blog -->
+                        <div>
+                            <h3 class="text-2xl font-bold mb-6">From the Blog</h3>
+                            <div class="space-y-8">
+                                <div class="blog-card">
+                                    <div class="flex items-center mb-2">
+                                        <span class="text-xs uppercase tracking-widest font-bold" style="color: var(--primary);">June 12, 2023</span>
+                                        <span class="mx-2 text-gray-300">•</span>
+                                        <span class="text-xs uppercase tracking-widest font-bold" style="color: var(--secondary);">Creative Process</span>
+                                    </div>
+                                    <h4 class="text-xl font-bold mb-2">Finding Inspiration in the Everyday</h4>
+                                    <p class="mb-3 font-medium">How morning walks and coffee shop observations fuel my creative practice...</p>
+                                    <a href="#" class="text-sm border-b-2 border-black pb-1 inline-block font-bold">Read more →</a>
+                                </div>
+                                <div class="blog-card">
+                                    <div class="flex items-center mb-2">
+                                        <span class="text-xs uppercase tracking-widest font-bold" style="color: var(--primary);">April 28, 2023</span>
+                                        <span class="mx-2 text-gray-300">•</span>
+                                        <span class="text-xs uppercase tracking-widest font-bold" style="color: var(--secondary);">Art & Literature</span>
+                                    </div>
+                                    <h4 class="text-xl font-bold mb-2">When Words Fail: Painting the Unspeakable</h4>
+                                    <p class="mb-3 font-medium">Exploring how visual art can express what language sometimes cannot...</p>
+                                    <a href="#" class="text-sm border-b-2 border-black pb-1 inline-block font-bold">Read more →</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-16">
+                        <a href="#" class="inline-block border-b-2 border-black pb-1 text-sm uppercase tracking-widest font-bold hover:opacity-70">View All Publications →</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-24 relative" style="background-color: #f5f5f5;">
+        <!-- Graphic elements -->
+        <div class="graphic-circle" style="width: 250px; height: 250px; background: var(--primary); top: -100px; left: -100px;"></div>
+        
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="flex flex-col md:flex-row">
+                <div class="md:w-1/3 mb-12 md:mb-0">
+                    <h2 class="title-font text-5xl md:text-6xl mb-6 artistic-border">Contact</h2>
+                    <p class="text-sm uppercase tracking-widest font-medium" style="color: var(--primary);">GET IN TOUCH</p>
+                    
+                    <div class="mt-12 space-y-6">
+                        <div>
+                            <p class="text-xs uppercase tracking-widest font-bold mb-2" style="color: var(--primary);">Email</p>
+                            <a href="mailto:hello@juliado.com" class="text-xl font-bold hover:opacity-70">hello@juliado.com</a>
+                        </div>
+                        <div>
+                            <p class="text-xs uppercase tracking-widest font-bold mb-2" style="color: var(--primary);">Studio</p>
+                            <p class="text-xl font-bold">123 Art Street<br>Portland, OR 97209</p>
+                        </div>
+                        <div>
+                            <p class="text-xs uppercase tracking-widest font-bold mb-2" style="color: var(--primary);">Social</p>
+                            <div class="flex space-x-4">
+                                <a href="#" class="text-2xl hover:opacity-70"><i class="fab fa-instagram"></i></a>
+                                <a href="#" class="text-2xl hover:opacity-70"><i class="fab fa-twitter"></i></a>
+                                <a href="#" class="text-2xl hover:opacity-70"><i class="fab fa-linkedin-in"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="md:w-2/3">
+                    <form class="max-w-lg ml-auto bg-white p-8" style="border: 4px solid var(--dark); box-shadow: 8px 8px 0 var(--accent);">
+                        <div class="mb-8">
+                            <label for="name" class="block text-sm uppercase tracking-widest font-bold mb-2">Name</label>
+                            <input type="text" id="name" name="name" class="contact-input w-full py-3 px-1 focus:outline-none font-medium">
+                        </div>
+                        <div class="mb-8">
+                            <label for="email" class="block text-sm uppercase tracking-widest font-bold mb-2">Email</label>
+                            <input type="email" id="email" name="email" class="contact-input w-full py-3 px-1 focus:outline-none font-medium">
+                        </div>
+                        <div class="mb-8">
+                            <label for="subject" class="block text-sm uppercase tracking-widest font-bold mb-2">Subject</label>
+                            <select id="subject" name="subject" class="contact-input w-full py-3 px-1 focus:outline-none bg-transparent font-medium">
+                                <option>General Inquiry</option>
+                                <option>Art Commission</option>
+                                <option>Writing Collaboration</option>
+                                <option>Workshop Inquiry</option>
+                                <option>Other</option>
+                            </select>
+                        </div>
+                        <div class="mb-8">
+                            <label for="message" class="block text-sm uppercase tracking-widest font-bold mb-2">Message</label>
+                            <textarea id="message" name="message" rows="5" class="contact-input w-full py-3 px-1 focus:outline-none font-medium"></textarea>
+                        </div>
+                        <button type="submit" class="px-8 py-3 btn-primary w-full">Send Message</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-12">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-6 md:mb-0">
+                    <p class="text-sm font-medium">© 2023 Julia Do. All rights reserved.</p>
+                </div>
+                <div class="flex space-x-6">
+                    <a href="#" class="text-sm font-bold hover:opacity-70">Privacy Policy</a>
+                    <a href="#" class="text-sm font-bold hover:opacity-70">Terms of Use</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile menu toggle
+        document.getElementById('menu-toggle').addEventListener('click', function() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('open');
+        });
+
+        // Art category switching
+        function showCategory(category) {
+            // Hide all galleries
+            document.querySelectorAll('.art-gallery').forEach(gallery => {
+                gallery.classList.add('hidden');
+            });
+            
+            // Show selected gallery
+            document.getElementById(category).classList.remove('hidden');
+            
+            // Update active button
+            document.querySelectorAll('.art-category').forEach(btn => {
+                if (btn.getAttribute('onclick').includes(category)) {
+                    btn.classList.add('active-category');
+                } else {
+                    btn.classList.remove('active-category');
+                }
+            });
+        }
+
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                
+                // Close mobile menu if open
+                const mobileMenu = document.getElementById('mobile-menu');
+                if (mobileMenu.classList.contains('open')) {
+                    mobileMenu.classList.remove('open');
+                }
+                
+                // Scroll to section
+                const targetId = this.getAttribute('href');
+                if (targetId !== '#') {
+                    document.querySelector(targetId).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+
+        // Highlight active section in navigation while scrolling
+        window.addEventListener('scroll', function() {
+            const scrollPosition = window.scrollY;
+            
+            document.querySelectorAll('section').forEach(section => {
+                const sectionTop = section.offsetTop - 100;
+                const sectionBottom = sectionTop + section.offsetHeight;
+                const sectionId = section.getAttribute('id');
+                
+                if (scrollPosition >= sectionTop && scrollPosition < sectionBottom) {
+                    document.querySelectorAll('.nav-link').forEach(link => {
+                        link.classList.remove('active-nav');
+                    });
+                    
+                    const correspondingLink = document.querySelector(`.nav-link[href="#${sectionId}"]`);
+                    if (correspondingLink) {
+                        correspondingLink.classList.add('active-nav');
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
